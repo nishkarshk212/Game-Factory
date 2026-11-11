@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useMatch } from '../../context/MatchContext';
 import { GameIcon } from '../UI/GameIcon';
+import { GameThumbnail } from '../UI/GameThumbnail';
 import { Avatar } from '../UI/Avatar';
 import { apiRequest } from '../../lib/api';
 import { buildInviteLinks, openTelegramShare } from '../../lib/telegram';
@@ -62,69 +63,79 @@ export const LobbyOverlays: React.FC = () => {
   if (selectedGameForLobby && !activeMatch && !queuedGame) {
     const g = GAME_MAP[selectedGameForLobby];
     return (
-      <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div className="gv-glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 border border-white/15 shadow-2xl">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${g.gradient} border border-white/15 flex items-center justify-center`}>
-                <GameIcon gameId={g.id} className="text-3xl" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold">{g.name}</h2>
-                <p className="text-xs opacity-75">{g.tagline}</p>
-              </div>
-            </div>
-            <button onClick={closeLobbyModal} className="p-2 rounded-xl hover:bg-white/10">
+      <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div className="gv-glass w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl overflow-hidden border border-white/15 shadow-2xl">
+          <div className="relative aspect-[16/9] w-full bg-[#11131f]">
+            <GameThumbnail gameId={g.id} />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d14] via-black/25 to-black/30" />
+            <button
+              onClick={closeLobbyModal}
+              className="absolute top-3 right-3 p-2 rounded-full bg-black/55 text-white hover:bg-black/80 transition"
+              aria-label="Close"
+            >
               <X className="w-5 h-5" />
             </button>
-          </div>
-
-          <div className="mt-4 p-3.5 rounded-2xl gv-card space-y-1.5">
-            <div className="text-xs font-bold uppercase tracking-wider text-cyan-400">Rules & Format</div>
-            <ul className="text-xs opacity-80 space-y-1 list-disc pl-4">
-              {g.rules.map((r, i) => (
-                <li key={i}>{r}</li>
-              ))}
-            </ul>
-            <div className="pt-1 flex items-center gap-3 text-[11px] opacity-70">
-              <span>👥 2 Players Only (No Bots)</span>
-              <span>⏱️ {g.defaultTurnSeconds}s / turn</span>
-              <span>🕒 {g.avgMinutes}</span>
+            <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-2 text-white">
+              <div>
+                <h2 className="text-xl font-black leading-tight">{g.name}</h2>
+                <p className="text-xs text-slate-300">{g.tagline}</p>
+              </div>
+              <span className="px-2.5 py-1 rounded-full bg-[#6842FF] text-[10px] font-bold uppercase shrink-0">
+                2P LIVE
+              </span>
             </div>
           </div>
 
-          <div className="mt-5 space-y-2.5">
-            <button
-              onClick={() => playOnline(g.id)}
-              className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-violet-600 text-white font-bold text-sm shadow-neon flex items-center justify-center gap-2 hover:brightness-110 transition"
-            >
-              <Globe className="w-4 h-4" />
-              Play Online (Find Opponent)
-            </button>
+          <div className="p-5 sm:p-6">
+            <div className="p-3.5 rounded-2xl gv-card space-y-1.5">
+              <div className="text-xs font-bold uppercase tracking-wider text-[#6842FF] dark:text-cyan-400">
+                Rules &amp; Format
+              </div>
+              <ul className="text-xs opacity-80 space-y-1 list-disc pl-4">
+                {g.rules.map((r, i) => (
+                  <li key={i}>{r}</li>
+                ))}
+              </ul>
+              <div className="pt-1 flex items-center gap-3 text-[11px] opacity-70">
+                <span>👥 2 Players Only (No Bots)</span>
+                <span>⏱️ {g.defaultTurnSeconds}s / turn</span>
+                <span>🕒 {g.avgMinutes}</span>
+              </div>
+            </div>
 
-            <button
-              onClick={() => createPrivateRoom(g.id)}
-              className="w-full py-3 px-4 rounded-2xl gv-card hover:border-violet-400/50 font-semibold text-sm flex items-center justify-center gap-2 transition"
-            >
-              <Lock className="w-4 h-4 text-violet-400" />
-              Create Private Room & Invite Friend
-            </button>
-
-            <div className="flex gap-2 pt-1">
-              <input
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                placeholder="Enter Room Code (e.g. GV7K2P)"
-                maxLength={10}
-                className="flex-1 px-3.5 py-2.5 rounded-xl gv-card text-sm font-mono uppercase focus:outline-none focus:border-cyan-400"
-              />
+            <div className="mt-4 space-y-2.5">
               <button
-                onClick={() => joinCode.trim() && joinPrivateRoom(joinCode)}
-                className="px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-sm hover:bg-emerald-500/30 transition flex items-center gap-1.5"
+                onClick={() => playOnline(g.id)}
+                className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-[#6842FF] via-indigo-600 to-cyan-500 text-white font-bold text-sm shadow-neon flex items-center justify-center gap-2 hover:brightness-110 transition"
               >
-                <KeyRound className="w-4 h-4" />
-                Join
+                <Globe className="w-4 h-4" />
+                Play Online (Find Opponent)
               </button>
+
+              <button
+                onClick={() => createPrivateRoom(g.id)}
+                className="w-full py-3 px-4 rounded-2xl gv-card hover:border-[#6842FF]/60 font-semibold text-sm flex items-center justify-center gap-2 transition"
+              >
+                <Lock className="w-4 h-4 text-[#6842FF] dark:text-violet-400" />
+                Create Private Room &amp; Invite Friend
+              </button>
+
+              <div className="flex gap-2 pt-1">
+                <input
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  placeholder="Enter Room Code (e.g. GV7K2P)"
+                  maxLength={10}
+                  className="flex-1 px-3.5 py-2.5 rounded-xl gv-card text-sm font-mono uppercase focus:outline-none focus:border-[#6842FF]"
+                />
+                <button
+                  onClick={() => joinCode.trim() && joinPrivateRoom(joinCode)}
+                  className="px-4 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-600 dark:text-emerald-300 font-bold text-sm hover:bg-emerald-500/30 transition flex items-center gap-1.5"
+                >
+                  <KeyRound className="w-4 h-4" />
+                  Join
+                </button>
+              </div>
             </div>
           </div>
         </div>

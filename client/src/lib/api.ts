@@ -1,4 +1,5 @@
 const TOKEN_KEY = 'gv_sonic_token';
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
 
 export function getStoredToken(): string | null {
   return sessionStorage.getItem(TOKEN_KEY) || localStorage.getItem(TOKEN_KEY);
@@ -27,7 +28,8 @@ export async function apiRequest<T = any>(
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const res = await fetch(path, { ...options, headers });
+  const target = path.startsWith('http') ? path : `${API_BASE}${path}`;
+  const res = await fetch(target, { ...options, headers });
   const text = await res.text();
   let json: any = {};
   try {

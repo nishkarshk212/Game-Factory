@@ -42,7 +42,14 @@
    - Frontend: `http://localhost:5173`
    - Backend + Socket.IO: `http://localhost:3001`
 
-## Production Deployment (Docker Compose)
+## Production Deployment
+
+### Option A: Vercel (Frontend) + Railway / Render (Socket.IO Backend + PostgreSQL + Redis)
+Because Vercel serverless functions do not maintain persistent Socket.IO WebSocket connections, deploy the backend to a persistent Node/Docker host (e.g. Railway or Render) and the static frontend to Vercel:
+1. **Backend (Railway / Render):** Deploy using the root `Dockerfile` with managed **PostgreSQL** and **Redis**, and set `CLIENT_ORIGINS=https://your-vercel-app.vercel.app,https://t.me,https://web.telegram.org`.
+2. **Frontend (Vercel):** Import `nishkarshk212/Game-Factory` on Vercel (root `vercel.json` is preconfigured) and set environment variable `VITE_API_URL=https://your-backend-domain.up.railway.app` (and optionally `VITE_SOCKET_URL`).
+
+### Option B: Single-Container Docker Compose
 ```bash
 TELEGRAM_BOT_TOKEN=your_bot_token JWT_SECRET=your_secret docker compose up --build -d
 ```

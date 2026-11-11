@@ -1,6 +1,8 @@
 import { io, type Socket } from 'socket.io-client';
 
 let socketInstance: Socket | null = null;
+const SOCKET_URL =
+  import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || '/';
 
 export function connectSocket(token: string): Socket {
   if (socketInstance) {
@@ -9,7 +11,7 @@ export function connectSocket(token: string): Socket {
     return socketInstance;
   }
 
-  socketInstance = io('/', {
+  socketInstance = io(SOCKET_URL, {
     auth: { token },
     transports: ['websocket', 'polling'],
     reconnection: true,
@@ -31,4 +33,3 @@ export function disconnectSocket() {
     socketInstance = null;
   }
 }
-
