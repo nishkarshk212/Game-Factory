@@ -1,0 +1,117 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gv-bg: #f1f5f9;
+  --gv-surface: #ffffff;
+  --gv-card: #f8fafc;
+  --gv-card-hover: #e2e8f0;
+  --gv-border: rgba(15, 23, 42, 0.1);
+  --gv-text: #0f172a;
+  --gv-muted: #475569;
+}
+
+html.dark {
+  --gv-bg: #0c0d14;
+  --gv-surface: #13141e;
+  --gv-card: #1a1c2b;
+  --gv-card-hover: #23263a;
+  --gv-border: rgba(255, 255, 255, 0.08);
+  --gv-text: #f8fafc;
+  --gv-muted: #9aa0b8;
+}
+
+html,
+body {
+  min-height: 100dvh;
+  background-color: var(--gv-bg);
+  color: var(--gv-text);
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  overscroll-behavior-y: contain;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gv-glass {
+  background: color-mix(in srgb, var(--gv-surface) 92%, transparent);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--gv-border);
+}
+
+.gv-card {
+  background: var(--gv-card);
+  border: 1px solid var(--gv-border);
+}
+
+.sonic-gradient-text {
+  background: linear-gradient(135deg, #00f0ff 0%, #7c5cff 50%, #ec4899 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sonic-bg-grid {
+  background-image:
+    radial-gradient(circle at 12% 0%, rgba(104, 66, 255, 0.14), transparent 36%),
+    radial-gradient(circle at 88% 8%, rgba(0, 240, 255, 0.1), transparent 34%);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@keyframes radarPulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+.animate-radar {
+  animation: radarPulse 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+@keyframes discDrop {
+  from {
+    transform: translateY(-160%);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-disc-drop {
+  animation: discDrop 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes turnGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px rgba(0, 240, 255, 0.55), 0 0 18px rgba(0, 240, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.9), 0 0 28px rgba(0, 240, 255, 0.4);
+  }
+}
+
+.active-turn-ring {
+  animation: turnGlow 1.6s ease-in-out infinite;
+}
+
+.pb-safe {
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.pt-safe {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+}

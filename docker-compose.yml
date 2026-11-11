@@ -1,0 +1,62 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: gameverse_secure_password
+      POSTGRES_DB: gameverse
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gameverse"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:gameverse_secure_password@postgres:5432/gameverse
+      REDIS_URL: redis://redis:6379
+      ALLOW_IN_MEMORY_REDIS_FALLBACK: "false"
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-GameVerseSonicBot}
+      TELEGRAM_MINI_APP_SHORT_NAME: ${TELEGRAM_MINI_APP_SHORT_NAME:-gameverse}
+      JWT_SECRET: ${JWT_SECRET:-change-this-production-jwt-secret}
+      ALLOW_DEV_AUTH: ${ALLOW_DEV_AUTH:-false}
+      ADMIN_TELEGRAM_IDS: ${ADMIN_TELEGRAM_IDS:-100001}
+      CLIENT_ORIGINS: ${CLIENT_ORIGINS:-https://t.me,https://web.telegram.org}
+
+volumes:
+  pg_data:
+  redis_data:
+
